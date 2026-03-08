@@ -65,8 +65,7 @@ POST /api/v1/wallets/create_user
 
 ```json
 {
-  "firstName": "Collins",
-  "lastName": "Okafor",
+  "fullName": "Collins Okafor",
   "email": "collinsdaberechi20@gmail.com"
 }
 ```
