@@ -143,7 +143,7 @@ git clone https://github.com/collinsdaberechukwu/wallet-system.git
 ```
 spring.datasource.url=jdbc:mysql://localhost:3306/walletSystemDb
 spring.datasource.username=root
-spring.datasource.password="@Collins20"
+spring.datasource.password= {password}
 ```
 
 3. Run the application
