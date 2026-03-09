@@ -34,6 +34,8 @@ public class AccountServiceImpl implements AccountService {
         WalletBalance walletBalance = new WalletBalance();
         walletBalance.setBalance(BigDecimal.ZERO);
 
+        walletBalance.setAccount(account);
+
         account.setWalletBalance(walletBalance);
         account.setUser(users);
 

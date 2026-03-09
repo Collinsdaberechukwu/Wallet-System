@@ -187,19 +187,29 @@ public class WalletServiceImpl implements WalletService {
             throw new InvalidFundingAmountException("Funding amount must be greater than zero");
         }
 
+
         Account account = getAccount(accountNumber);
+        if (account == null){
+            throw new ResourceNotFoundException("Account not found: " + accountNumber );
+        }
+
+
         validateAccountStatus(account);
-
         WalletBalance wallet = getWallet(account);
-
+        if (wallet == null){
+            throw new ResourceNotFoundException("Wallet not found for account : " + accountNumber);
+        }
 
         wallet.setBalance(wallet.getBalance().add(amount));
+
         walletBalanceRepository.save(wallet);
 
         log.info("Account {} funded successfully. New balance: {}", accountNumber, wallet.getBalance());
 
+
         TransferRespDto response =
                 WalletMapper.toTransferResponse("Account funded successfully. Current balance: " + wallet.getBalance());
+
 
         return ResponseEntity.ok(response);
     }
