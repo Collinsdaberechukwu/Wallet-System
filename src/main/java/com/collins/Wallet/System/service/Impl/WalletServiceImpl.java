@@ -8,6 +8,7 @@ import com.collins.Wallet.System.enums.AccountStatus;
 import com.collins.Wallet.System.enums.IdempotencyStatus;
 import com.collins.Wallet.System.event.UserCreatedEvent;
 import com.collins.Wallet.System.exception.DuplicateException;
+import com.collins.Wallet.System.exception.InvalidFundingAmountException;
 import com.collins.Wallet.System.exception.ResourceNotFoundException;
 import com.collins.Wallet.System.exception.UserAlreadyExistException;
 import com.collins.Wallet.System.mapper.UserMapper;
@@ -186,7 +187,7 @@ public class WalletServiceImpl implements WalletService {
         log.info("Funding account {} with amount {}", accountNumber, amount);
 
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Funding amount must be greater than zero");
+            throw new InvalidFundingAmountException("Funding amount must be greater than zero");
         }
 
         Account account = getAccount(accountNumber);

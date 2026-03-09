@@ -102,4 +102,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(InvalidFundingAmountException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidFundingAmountException(InvalidFundingAmountException exception,
+                                                                                WebRequest request){
+
+        ErrorResponseDto responseDto = new ErrorResponseDto(
+                request.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(responseDto,HttpStatus.BAD_REQUEST);
+
+    }
 }
