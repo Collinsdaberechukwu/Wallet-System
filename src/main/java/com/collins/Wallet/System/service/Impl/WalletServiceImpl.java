@@ -7,10 +7,7 @@ import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
 import com.collins.Wallet.System.enums.AccountStatus;
 import com.collins.Wallet.System.enums.IdempotencyStatus;
 import com.collins.Wallet.System.event.UserCreatedEvent;
-import com.collins.Wallet.System.exception.DuplicateException;
-import com.collins.Wallet.System.exception.InvalidFundingAmountException;
-import com.collins.Wallet.System.exception.ResourceNotFoundException;
-import com.collins.Wallet.System.exception.UserAlreadyExistException;
+import com.collins.Wallet.System.exception.*;
 import com.collins.Wallet.System.mapper.UserMapper;
 import com.collins.Wallet.System.mapper.WalletMapper;
 import com.collins.Wallet.System.model.Account;
@@ -141,14 +138,14 @@ public class WalletServiceImpl implements WalletService {
     private void validateAccountStatus(Account account) {
 
         if (account.getAccountStatus() != AccountStatus.ACTIVE) {
-            throw new ResourceNotFoundException("Account is not active");
+            throw new InactiveAccountException("Account is not active");
         }
     }
 
     private void validateBalance(BigDecimal balance, BigDecimal amount) {
 
         if (balance.compareTo(amount) < 0) {
-            throw new ResourceNotFoundException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
     }
 
