@@ -4,8 +4,10 @@ import com.collins.Wallet.System.dtos.ResponseDto;
 import com.collins.Wallet.System.dtos.ResponseDtos.TransferRespDto;
 import com.collins.Wallet.System.dtos.ResquestDto.CreateUserRequestDto;
 import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
+import com.collins.Wallet.System.dtos.ResquestDto.FundAccountRequestDto;
 import com.collins.Wallet.System.enums.AccountStatus;
 import com.collins.Wallet.System.enums.IdempotencyStatus;
+import com.collins.Wallet.System.event.FundAccountCreatedEvent;
 import com.collins.Wallet.System.event.UserCreatedEvent;
 import com.collins.Wallet.System.exception.*;
 import com.collins.Wallet.System.mapper.UserMapper;
@@ -20,6 +22,7 @@ import com.collins.Wallet.System.repository.UserRepository;
 import com.collins.Wallet.System.repository.WalletBalanceRepository;
 import com.collins.Wallet.System.service.WalletService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -179,32 +182,28 @@ public class WalletServiceImpl implements WalletService {
 
     @Transactional
     @Override
-    public ResponseEntity<TransferRespDto> fundAccount(String accountNumber, BigDecimal amount) {
+    public ResponseEntity<TransferRespDto> fundAccount(@Valid FundAccountRequestDto fundAccountRequestDto) {
 
-        log.info("Funding account {} with amount {}", accountNumber, amount);
+        log.info("Funding account with amount: {}", fundAccountRequestDto);
 
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidFundingAmountException("Funding amount must be greater than zero");
-        }
-
-
-        Account account = getAccount(accountNumber);
+        Account account = getAccount(fundAccountRequestDto.getAccountNumber());
         if (account == null){
-            throw new ResourceNotFoundException("Account not found: " + accountNumber );
+            throw new ResourceNotFoundException("Account not found: " + fundAccountRequestDto.getAccountNumber());
         }
 
 
         validateAccountStatus(account);
         WalletBalance wallet = getWallet(account);
         if (wallet == null){
-            throw new ResourceNotFoundException("Wallet not found for account : " + accountNumber);
+            throw new ResourceNotFoundException("Wallet not found for account : " + fundAccountRequestDto.getAccountNumber());
         }
 
-        wallet.setBalance(wallet.getBalance().add(amount));
+        wallet.setBalance(wallet.getBalance().add(fundAccountRequestDto.getAmount()));
 
         walletBalanceRepository.save(wallet);
+        publisher.publishEvent(new FundAccountCreatedEvent(wallet));
 
-        log.info("Account {} funded successfully. New balance: {}", accountNumber, wallet.getBalance());
+        log.info("Account {} funded successfully. New balance: {}", fundAccountRequestDto.getAccountNumber(), wallet.getBalance());
 
 
         TransferRespDto response =

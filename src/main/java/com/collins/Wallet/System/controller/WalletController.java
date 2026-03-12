@@ -4,13 +4,14 @@ import com.collins.Wallet.System.dtos.ResponseDto;
 import com.collins.Wallet.System.dtos.ResponseDtos.TransferRespDto;
 import com.collins.Wallet.System.dtos.ResquestDto.CreateUserRequestDto;
 import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
+import com.collins.Wallet.System.dtos.ResquestDto.FundAccountRequestDto;
 import com.collins.Wallet.System.service.WalletService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
+
 
 @RestController
 @RequestMapping("/api/v1/wallets")
@@ -32,10 +33,7 @@ public class WalletController {
     }
 
     @PostMapping("/fund_account")
-    public ResponseEntity<TransferRespDto> fundAccount(
-            @RequestParam String accountNumber,
-            @RequestParam BigDecimal amount
-    ) {
-        return walletService.fundAccount(accountNumber, amount);
+    public ResponseEntity<TransferRespDto> fundAccount(@Valid @RequestBody FundAccountRequestDto fundAccountRequestDto) {
+        return walletService.fundAccount(fundAccountRequestDto);
     }
 }
