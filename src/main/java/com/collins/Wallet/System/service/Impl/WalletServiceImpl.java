@@ -2,6 +2,7 @@ package com.collins.Wallet.System.service.Impl;
 
 import com.collins.Wallet.System.dtos.ResponseDto;
 import com.collins.Wallet.System.dtos.ResponseDtos.TransferRespDto;
+import com.collins.Wallet.System.dtos.ResponseDtos.UserResponseDto;
 import com.collins.Wallet.System.dtos.ResquestDto.CreateUserRequestDto;
 import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
 import com.collins.Wallet.System.dtos.ResquestDto.FundAccountRequestDto;
@@ -31,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -113,6 +116,23 @@ public class WalletServiceImpl implements WalletService {
 
     private void validateIdempotency(String key) {
 
+//        Optional<IdempotencyKey> existing = idempotencyRepository.findByIdempotencyKey(key);
+//
+//        if (existing.isPresent()){
+//            IdempotencyKey record = existing.get();
+//
+//            if (record.getStatus() == IdempotencyStatus.PROCESSING){
+//                throw new PaymentProcessingException("Transfer is currently processing");
+//            }
+//            if (record.getStatus() == IdempotencyStatus.SUCCESS){
+//                throw new PaymentSuccessfulException("Transfer already completed");
+//            }
+//
+//            if (record.getStatus() == IdempotencyStatus.FAILED){
+//                throw new DuplicateException("Previous transfer attempt failed");
+//            }
+//        }
+
         idempotencyRepository.findByIdempotencyKey(key)
                 .ifPresent(existing -> {
 
@@ -157,6 +177,21 @@ public class WalletServiceImpl implements WalletService {
         source.setBalance(source.getBalance().subtract(amount));
 
         destination.setBalance(destination.getBalance().add(amount));
+    }
+
+    private void updateIdempotencySuccess(IdempotencyKey record, TransferRespDto response) {
+
+        record.setStatus(IdempotencyStatus.SUCCESS);
+        record.setResponseBody("Transfer successful");
+
+        idempotencyRepository.save(record);
+    }
+
+    private void updateIdempotencyFailed(IdempotencyKey record) {
+
+        record.setStatus(IdempotencyStatus.FAILED);
+
+        idempotencyRepository.save(record);
     }
 
     private void saveIdempotencyRecord(DoTransDto dto, String key) {
@@ -211,6 +246,26 @@ public class WalletServiceImpl implements WalletService {
 
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @Transactional
+    @Override
+    public ResponseEntity<List<UserResponseDto>> getAllUser(){
+       List<Users> userList = userRepository.findAll();
+       log.info("Total users fetch: {}", userList.size());
+
+       List<UserResponseDto> userResponseDtoList = new ArrayList<>();
+
+       for (Users user : userList){
+           UserResponseDto userResponseDto = new UserResponseDto();
+           userResponseDto.setId(user.getId());
+           userResponseDto.setFullName(user.getFullName());
+           userResponseDto.setEmail(user.getEmail());
+
+           userResponseDtoList.add(userResponseDto);
+       }
+         return ResponseEntity.ok(userResponseDtoList);
     }
 
 

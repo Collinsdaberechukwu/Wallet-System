@@ -1,6 +1,7 @@
-package com.collins.Wallet.System.exception;
+package com.collins.Wallet.System.exception.GlobalExceptions;
 
 import com.collins.Wallet.System.dtos.ErrorResponseDto;
+import com.collins.Wallet.System.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -141,5 +142,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 LocalDateTime.now()
         );
           return new ResponseEntity<>(responseDto,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PaymentProcessingException.class)
+    public ResponseEntity<ErrorResponseDto> handlePaymentProcessingException(PaymentProcessingException ex,
+                                                                             WebRequest request){
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                request.getDescription(false),
+                HttpStatus.PAYMENT_REQUIRED,
+                ex.getMessage(),
+                LocalDateTime.now()
+        );
+          return new ResponseEntity<>(errorResponseDto,HttpStatus.PAYMENT_REQUIRED);
+    }
+
+    @ExceptionHandler(PaymentSuccessfulException.class)
+    public ResponseEntity<ErrorResponseDto> handlePaymentSuccessfulException(PaymentSuccessfulException exception,
+                                                                             WebRequest webRequest){
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.ACCEPTED,
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+          return new ResponseEntity<>(errorResponseDto,HttpStatus.ACCEPTED);
     }
 }

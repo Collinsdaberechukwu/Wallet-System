@@ -2,6 +2,7 @@ package com.collins.Wallet.System.controller;
 
 import com.collins.Wallet.System.dtos.ResponseDto;
 import com.collins.Wallet.System.dtos.ResponseDtos.TransferRespDto;
+import com.collins.Wallet.System.dtos.ResponseDtos.UserResponseDto;
 import com.collins.Wallet.System.dtos.ResquestDto.CreateUserRequestDto;
 import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
 import com.collins.Wallet.System.dtos.ResquestDto.FundAccountRequestDto;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
 
 @RestController
@@ -21,7 +23,8 @@ public class WalletController {
     private final WalletService walletService;
 
     @PostMapping("/create_user")
-    public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request) {
+    public ResponseEntity<ResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request) throws InterruptedException {
+        Thread.sleep(2000);
         return walletService.createUser(request);
     }
 
@@ -35,5 +38,11 @@ public class WalletController {
     @PostMapping("/fund_account")
     public ResponseEntity<TransferRespDto> fundAccount(@Valid @RequestBody FundAccountRequestDto fundAccountRequestDto) {
         return walletService.fundAccount(fundAccountRequestDto);
+    }
+
+    @GetMapping("/getList_Users")
+    public ResponseEntity<List<UserResponseDto>> getAllUser() throws InterruptedException {
+        Thread.sleep(2000);
+        return walletService.getAllUser();
     }
 }

@@ -2,6 +2,7 @@ package com.collins.Wallet.System.service;
 
 import com.collins.Wallet.System.dtos.ResponseDto;
 import com.collins.Wallet.System.dtos.ResponseDtos.TransferRespDto;
+import com.collins.Wallet.System.dtos.ResponseDtos.UserResponseDto;
 import com.collins.Wallet.System.dtos.ResquestDto.CreateUserRequestDto;
 import com.collins.Wallet.System.dtos.ResquestDto.DoTransDto;
 import com.collins.Wallet.System.dtos.ResquestDto.FundAccountRequestDto;
@@ -10,6 +11,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public interface WalletService {
@@ -23,4 +26,5 @@ public interface WalletService {
     ResponseEntity<TransferRespDto> fundAccount(@Valid FundAccountRequestDto fundAccountRequestDto);
 
 
+    ResponseEntity<List<UserResponseDto>> getAllUser();
 }
