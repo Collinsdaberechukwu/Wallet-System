@@ -28,7 +28,6 @@ public class WalletController {
         return walletService.createUser(request);
     }
 
-
     @PostMapping("/transfer_funds")
     public ResponseEntity<TransferRespDto> transferFunds(@Valid @RequestBody DoTransDto transferRequest,
                                         @RequestHeader("Idempotency-Key") String idempotencyKey) {
